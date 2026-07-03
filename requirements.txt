@@ -1,0 +1,2 @@
+aiohttp~=3.13.5
+nextcord~=2.6.0
