@@ -269,14 +269,17 @@ async def time(
         location = get_levels_and_locations()[clean_level]
 
         # Check whether there is already a better time
-        if person_key in data[location]['levels'].keys():
-            old_minutes: int = data[location]['levels'][clean_level][person_key][0]
-            old_seconds: int = data[location]['levels'][clean_level][person_key][1]
+        if person_key in data[location]['levels'][clean_level]:
+        old_minutes, old_seconds, _ = data[location]['levels'][clean_level][person_key]
+        # If the new time is worse or equal, block unless forced
+        if minutes > old_minutes or (minutes == old_minutes and seconds >= old_seconds):
+            if not force:
+                await interaction.response.send_message(
+                    f'<@{person.id}> already has a better time ({old_minutes}:{old_seconds:02}) for **{clean_level}**. Use `force = True` to overwrite this.',
+                    ephemeral=True
+                )
+                return
 
-            if minutes > old_minutes or (minutes == old_minutes and seconds >= old_seconds):
-                if not force:
-                    await interaction.response.send_message(f'<@{person.id}> already has a better time ({minutes}:{seconds:02}) for **{clean_level}**. \nUse `force = True` to overwrite this.', ephemeral=True)
-                    return
 
         # Add the new time to the JSON and display a message
         data[location]['levels'][clean_level][person_key] = (minutes, seconds, comment)
