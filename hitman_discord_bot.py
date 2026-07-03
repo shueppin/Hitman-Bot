@@ -18,53 +18,29 @@ CHECK_INTERVAL = 600  # seconds
 
 DATA_JSON = Path(__file__).parent / "data.json"
 
-CONTRACTS_LEVELS = [
-    "The Showstopper (Paris)",
-    "Holiday Hoarders (Paris)",
-    "World of Tomorrow (Sapienza)",
-    "A Gilded Cage (Marrakesh)",
-    "Club 27 (Bangkok)",
-    "Freedom Fighters (Colorado)",
-    "Situs Inversus (Hokkaido)",
-    "Hokkaido Snow Festival (Hokkaido)",
-    "The Finish Line (Miami)",
-    "Three-Headed Serpent (Santa Fortuna)",
-    "Chasing a Ghost (Mumbai)",
-    "Another Life (Whittleton Creek)",
-    "Shadows in the Water (Ambrose Island)",
-    "The Ark Society (Isle of Sgàil)",
-    "Golden Handshake (New York)",
-    "The Last Resort (Haven Island)",
-    "On Top of the World (Dubai)",
-    "Death in the Family (Dartmoor)",
-    "Apex Predator (Berlin)",
-    "End of an Era (Chongqing)",
-    "The Farewell (Mendoza)",
-]
-
-CONTRACT_CHANCES = [
-    60,    # Paris
-    60,    # Paris
-    100,   # Sapienza
-    100,   # Marrakesh
-    100,   # Bangkok
-    99,    # Colorado, kei Bock uf Colorado (-:
-    60,    # Hokkaido
-    60,    # Hokkaido
-    100,   # Miami
-    99,    # Santa Fortuna, kei Bock uf Kolumbie (-:
-    100,   # Mumbai
-    100,   # Whittleton Creek
-    100,   # Ambrose Island
-    100,   # Isle of Sgail
-    100,   # New York
-    100,   # Haven Island
-    100,   # Dubai
-    100,   # Dartmoor
-    99,    # Berlin, kei Bock uf die Dütsche (-:
-    100,   # Chongqing
-    100    # Mendoza
-]
+CONTRACTS_LEVELS = {  # The contract levels and their weights
+    "The Showstopper (Paris)": 60,
+    "Holiday Hoarders (Paris)": 60,
+    "World of Tomorrow (Sapienza)": 100,
+    "A Gilded Cage (Marrakesh)": 100,
+    "Club 27 (Bangkok)": 100,
+    "Freedom Fighters (Colorado)": 99,  # Kei Bock uf Colorado (-:
+    "Situs Inversus (Hokkaido)": 60,
+    "Hokkaido Snow Festival (Hokkaido)": 60,
+    "The Finish Line (Miami)": 100,
+    "Three-Headed Serpent (Santa Fortuna)": 99,  # Kei Bock uf Jungle (-:
+    "Chasing a Ghost (Mumbai)": 100,
+    "Another Life (Whittleton Creek)": 100,
+    "Shadows in the Water (Ambrose Island)": 100,
+    "The Ark Society (Isle of Sgàil)": 100,
+    "Golden Handshake (New York)": 100,
+    "The Last Resort (Haven Island)": 100,
+    "On Top of the World (Dubai)": 100,
+    "Death in the Family (Dartmoor)": 100,
+    "Apex Predator (Berlin)": 99,  # Kei Bock uf Berlin (-:
+    "End of an Era (Chongqing)": 100,
+    "The Farewell (Mendoza)": 100,
+}
 
 
 class LocationDataType(TypedDict):
@@ -270,16 +246,12 @@ async def time(
 
         # Check whether there is already a better time
         if person_key in data[location]['levels'][clean_level]:
-        old_minutes, old_seconds, _ = data[location]['levels'][clean_level][person_key]
-        # If the new time is worse or equal, block unless forced
-        if minutes > old_minutes or (minutes == old_minutes and seconds >= old_seconds):
-            if not force:
-                await interaction.response.send_message(
-                    f'<@{person.id}> already has a better time ({old_minutes}:{old_seconds:02}) for **{clean_level}**. Use `force = True` to overwrite this.',
-                    ephemeral=True
-                )
-                return
-
+            old_minutes, old_seconds, _ = data[location]['levels'][clean_level][person_key]
+            # If the new time is worse or equal, block unless forced
+            if minutes > old_minutes or (minutes == old_minutes and seconds >= old_seconds):
+                if not force:
+                    await interaction.response.send_message(f'<@{person.id}> already has a better time ({old_minutes}:{old_seconds:02}) for **{clean_level}**. \nUse `force = True` to overwrite this.', ephemeral=True)
+                    return
 
         # Add the new time to the JSON and display a message
         data[location]['levels'][clean_level][person_key] = (minutes, seconds, comment)
@@ -506,11 +478,19 @@ async def contracts(
         await interaction.response.send_message('Please specify a valid number.', ephemeral=True)
         return
 
-    retry : bool = True
-    attempts : int = 0
+    # Take the simple way instead of risking duplicates by using the weights
+    if number_of_contracts >= len(CONTRACTS_LEVELS)//2:
+        result = random.sample(CONTRACTS_LEVELS, number_of_contracts)
+        await interaction.response.send_message("\n".join(result))
+        return
+
+    # Choose the levels based on their probability
+    retry: bool = True
+    attempts: int = 0
+    result: List[str] = []
     while retry:
         retry = False
-        result = random.choices(CONTRACTS_LEVELS, weights=CONTRACT_CHANCES, k=number_of_contracts)
+        result = random.choices(list(CONTRACTS_LEVELS.keys()), weights=list(CONTRACTS_LEVELS.values()), k=number_of_contracts)
 
         # Check if result contains no duplicates
         for contract_possibility in CONTRACTS_LEVELS:
@@ -520,11 +500,8 @@ async def contracts(
 
         # Some exit-possibilities such that the loop is not infinite (/ very long)
         # This will allow duplicates
-        if number_of_contracts >= len(CONTRACTS_LEVELS)//2:
-            retry = False
         if attempts >= 100:
             retry = False
-    
 
     await interaction.response.send_message("\n".join(result))
 
@@ -536,12 +513,12 @@ Discord Autocomplete functions
 
 @time.on_autocomplete("level")
 @records.on_autocomplete("level")
-async def extended_level_autocomplete(interaction: Interaction, current: str):
+async def extended_level_autocomplete(_interaction: Interaction, current: str):
     return autocomplete_handler(current, get_levels(display_location_in_name=True))
 
 
 @rename_level.on_autocomplete("old_level_name")
-async def simple_level_autocomplete(interaction: Interaction, current: str):
+async def simple_level_autocomplete(_interaction: Interaction, current: str):
     return autocomplete_handler(current, get_levels())
 
 
@@ -550,7 +527,7 @@ async def simple_level_autocomplete(interaction: Interaction, current: str):
 @mastery.on_autocomplete("location")
 @records.on_autocomplete("location")
 @set_mastery.on_autocomplete("location")
-async def location_autocomplete(interaction: Interaction, current: str):
+async def location_autocomplete(_interaction: Interaction, current: str):
     return autocomplete_handler(current, get_locations())
 
 
