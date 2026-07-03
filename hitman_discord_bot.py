@@ -42,6 +42,30 @@ CONTRACTS_LEVELS = [
     "The Farewell (Mendoza)",
 ]
 
+CONTRACT_CHANCES = [
+    60,    # Paris
+    60,    # Paris
+    100,   # Sapienza
+    100,   # Marrakesh
+    100,   # Bangkok
+    99,    # Colorado, kei Bock uf Colorado (-:
+    60,    # Hokkaido
+    60,    # Hokkaido
+    100,   # Miami
+    99,    # Santa Fortuna, kei Bock uf Kolumbie (-:
+    100,   # Mumbai
+    100,   # Whittleton Creek
+    100,   # Ambrose Island
+    100,   # Isle of Sgail
+    100,   # New York
+    100,   # Haven Island
+    100,   # Dubai
+    100,   # Dartmoor
+    99,    # Berlin, kei Bock uf die Dütsche (-:
+    100,   # Chongqing
+    100    # Mendoza
+]
+
 
 class LocationDataType(TypedDict):
     max_mastery: int
@@ -479,7 +503,25 @@ async def contracts(
         await interaction.response.send_message('Please specify a valid number.', ephemeral=True)
         return
 
-    result = random.sample(CONTRACTS_LEVELS, number_of_contracts)
+    retry : bool = True
+    attempts : int = 0
+    while retry:
+        retry = False
+        result = random.choices(CONTRACTS_LEVELS, weights=CONTRACT_CHANCES, k=number_of_contracts)
+
+        # Check if result contains no duplicates
+        for contract_possibility in CONTRACTS_LEVELS:
+            if result.count(contract_possibility) >= 2:
+                retry = True  
+                attempts += 1
+
+        # Some exit-possibilities such that the loop is not infinite (/ very long)
+        # This will allow duplicates
+        if number_of_contracts >= len(CONTRACTS_LEVELS)//2:
+            retry = False
+        if attempts >= 100:
+            retry = False
+    
 
     await interaction.response.send_message("\n".join(result))
 
