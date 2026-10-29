@@ -3,7 +3,8 @@ import re
 import typing
 
 
-ROADMAP_JSON_URL = "https://cms.ioi.dk/api/v1/pages/article-explore-panels?type.group=type&type.tags[]=Roadmaps&universe.group=universe&universe.tags[]=HITMAN&location.group=location&location.tags[]=%23%23all_location%23%23&pagination.limit=20"
+ROADMAP_JSON_URL = "https://ioi.dk/api/articles?type.group=type&type.tags=Roadmaps&universe.group=universe&universe.tags=HITMAN&location.group=location&location.tags=%23%23all_location%23%23&pagination.limit=20"
+BASE_ARTICLE_URL = "https://ioi.dk"
 
 
 class HitmanMonitor:
@@ -30,14 +31,19 @@ class HitmanMonitor:
                 return '', '', ''
 
             # Fetch article HTML
+            if not "http" in article_url:
+                # Make sure the url is valid
+                article_url = BASE_ARTICLE_URL + article_url
+
             async with session.get(article_url) as response:
                 response.raise_for_status()
                 html = await response.text()
 
             # Extract image URL
             # Find first occurrence of "data-srcset"
-            match = re.search(r'data-srcset="([^"]+)"', html)
+            match = re.search(r'srcset="([^"]+)"', html)
             if not match:
+                print("Could not find image")
                 return '', '', ''
 
             srcset = match.group(1)
