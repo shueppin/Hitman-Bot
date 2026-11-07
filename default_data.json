@@ -84,9 +84,7 @@
     "mastery": {},
     "levels": {
       "Chasing a Ghost": {},
-      "The Dubious Cohabitation (Escalation - Level 3)": {},
-      "Illusions of Grandeur": {},
-      "Do not be lazy (Contract)": {}
+      "Illusions of Grandeur": {}
     }
   },
   "Whittleton Creek": {
@@ -94,7 +92,6 @@
     "mastery": {},
     "levels": {
       "Another Life": {},
-      "The Nolan Disinfection (Escalation - Level 3)": {},
       "A Bitter Pill": {}
     }
   },
@@ -137,8 +134,7 @@
     "max_mastery": 20,
     "mastery": {},
     "levels": {
-      "Death in the Family": {},
-      "The Dartmoor Garden Show (Escalation - Level 3)": {}
+      "Death in the Family": {}
     }
   },
   "Berlin": {
