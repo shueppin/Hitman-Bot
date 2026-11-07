@@ -1,4 +1,4 @@
-from secrets import BOT_TOKEN, ALLOWED_DISCORD_SERVERS, SEASONS_ANNOUNCEMENT_CHANNEL_ID, RECORDS_CHANNEL_ID, GENERAL_CHANNEL_ID, MASTERY_CHANNEL_ID
+from config import BOT_TOKEN, ALLOWED_DISCORD_SERVERS, SEASONS_ANNOUNCEMENT_CHANNEL_ID, RECORDS_CHANNEL_ID, GENERAL_CHANNEL_ID, MASTERY_CHANNEL_ID
 from hitman_monitor import HitmanMonitor
 
 from nextcord.ext import commands, tasks
@@ -19,16 +19,16 @@ CHECK_INTERVAL = 600  # seconds
 DATA_JSON = Path(__file__).parent / "data.json"
 
 CONTRACTS_LEVELS = {  # The contract levels and their weights
-    "The Showstopper (Paris)": 60,
-    "Holiday Hoarders (Paris)": 60,
+    "The Showstopper (Paris)": 50,
+    "Holiday Hoarders (Paris)": 50,
     "World of Tomorrow (Sapienza)": 100,
     "A Gilded Cage (Marrakesh)": 100,
     "Club 27 (Bangkok)": 100,
-    "Freedom Fighters (Colorado)": 99,  # Kei Bock uf Colorado (-:
-    "Situs Inversus (Hokkaido)": 60,
-    "Hokkaido Snow Festival (Hokkaido)": 60,
+    "Freedom Fighters (Colorado)": 99,  # Biased against Colorado
+    "Situs Inversus (Hokkaido)": 50,
+    "Hokkaido Snow Festival (Hokkaido)": 50,
     "The Finish Line (Miami)": 100,
-    "Three-Headed Serpent (Santa Fortuna)": 99,  # Kei Bock uf Jungle (-:
+    "Three-Headed Serpent (Santa Fortuna)": 99,  # Biased against jungle
     "Chasing a Ghost (Mumbai)": 100,
     "Another Life (Whittleton Creek)": 100,
     "Shadows in the Water (Ambrose Island)": 100,
@@ -37,7 +37,7 @@ CONTRACTS_LEVELS = {  # The contract levels and their weights
     "The Last Resort (Haven Island)": 100,
     "On Top of the World (Dubai)": 100,
     "Death in the Family (Dartmoor)": 100,
-    "Apex Predator (Berlin)": 99,  # Kei Bock uf Berlin (-:
+    "Apex Predator (Berlin)": 99,  # Biased against berlin
     "End of an Era (Chongqing)": 100,
     "The Farewell (Mendoza)": 100,
 }
