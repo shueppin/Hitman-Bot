@@ -5,18 +5,23 @@ from nextcord.ext import commands, tasks
 from nextcord import Interaction, SlashOption
 import nextcord
 import aiohttp
+
+import asyncio
+from datetime import datetime
 import io
 import json
-import asyncio
-from pathlib import Path
 import os
+from pathlib import Path
 import random
+import shutil
 from typing import TypedDict, Dict, Tuple, List
 
 
-CHECK_INTERVAL = 600  # seconds
-
 DATA_JSON = Path(__file__).parent / "data.json"
+DEFAULT_DATA_JSON = Path(__file__).parent / "default_data.json"
+BACKUP_DIRECTORY = Path(__file__).parent / "backups"
+
+CHECK_INTERVAL = 600  # seconds
 
 CONTRACTS_LEVELS = {  # The contract levels and their weights
     "The Showstopper (Paris)": 50,
@@ -64,6 +69,15 @@ def save_json(filename: Path, write_data: dict):
     with open(temp_file, "w") as f:
         json.dump(write_data, f, indent=2)
     os.replace(temp_file, filename)  # Atomic replace to prevent corruption on crash
+
+
+def backup_data_file():
+    if DATA_JSON.exists():
+        os.makedirs(BACKUP_DIRECTORY, exist_ok=True)
+        backup_file_name = "data_from_" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".json"
+        backup_file_path = BACKUP_DIRECTORY / backup_file_name
+        shutil.copy2(DATA_JSON, backup_file_path)
+        print("Backup data saved to " + str(backup_file_path))
 
 
 def get_levels_and_locations() -> Dict[str, str]:
@@ -151,7 +165,15 @@ bot = commands.Bot(description='HITMAN Helper Bot')
 
 hitman_monitor = HitmanMonitor()
 
-data: Dict[str, LocationDataType] = load_json(DATA_JSON)
+backup_data_file()  # Make a backup if the file exists
+
+data: Dict[str, LocationDataType]
+try:
+    data = load_json(DATA_JSON)
+except (FileNotFoundError, json.decoder.JSONDecodeError):
+    data = load_json(DEFAULT_DATA_JSON)
+    save_json(DATA_JSON, data)
+
 data_lock = asyncio.Lock()
 
 
