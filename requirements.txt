@@ -1,2 +1,3 @@
-aiohttp~=3.13.5
-nextcord~=2.6.0
+python-dotenv~=1.2.4
+aiohttp~=3.14.5
+nextcord~=3.2.0
