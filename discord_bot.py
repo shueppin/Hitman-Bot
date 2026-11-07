@@ -1,4 +1,4 @@
-from config import BOT_TOKEN, ALLOWED_DISCORD_SERVERS, SEASONS_ANNOUNCEMENT_CHANNEL_ID, RECORDS_CHANNEL_ID, GENERAL_CHANNEL_ID, MASTERY_CHANNEL_ID
+from config import BOT_TOKEN, ALLOWED_DISCORD_SERVER, SEASONS_ANNOUNCEMENT_CHANNEL_ID, RECORDS_CHANNEL_ID, GENERAL_CHANNEL_ID, MASTERY_CHANNEL_ID
 from hitman_monitor import HitmanMonitor
 
 from nextcord.ext import commands, tasks
@@ -224,7 +224,7 @@ Records commands
 '''
 
 
-@bot.slash_command(name="time", description='Add a new Silent Assassin time on difficulty Professional for a level', guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="time", description='Add a new Silent Assassin time on difficulty Professional for a level', guild_ids=[ALLOWED_DISCORD_SERVER])
 async def time(
         interaction: Interaction,
         level: str = SlashOption(description="Level name", autocomplete=True),
@@ -282,7 +282,7 @@ async def time(
     await interaction.response.send_message(f'Added time of {minutes}:{seconds:02} to **{clean_level}** for <@{person.id}>.')  # 02 pad with zeros to a total width of 2 characters
 
 
-@bot.slash_command(name="records", description="Display all records, or just the ones for a specific level", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="records", description="Display all records, or just the ones for a specific level", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def records(
         interaction: Interaction,
         location: str = SlashOption(description="Location", autocomplete=True, required=False),
@@ -328,7 +328,7 @@ async def records(
         await interaction.followup.send("\n" + chunk, ephemeral=True)
 
 
-@bot.slash_command(name="add_level", description="Add a new level in a location", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="add_level", description="Add a new level in a location", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def add_level(
         interaction: Interaction,
         level_name: str = SlashOption(description="Level name (without the location)"),
@@ -356,7 +356,7 @@ async def add_level(
     await interaction.response.send_message(f'Added new level **{level_name}** to **{location}**.')
 
 
-@bot.slash_command(name="rename_level", description="Rename a level", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="rename_level", description="Rename a level", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def rename_level(
         interaction: Interaction,
         old_level_name: str = SlashOption(description="Actual level name", autocomplete=True),
@@ -387,7 +387,7 @@ async def rename_level(
     await interaction.response.send_message(f"Level **{old_level_name}** has been renamed to **{new_level_name}**.")
 
 
-@bot.slash_command(name="list_levels", description="List all levels for all or a specific location", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="list_levels", description="List all levels for all or a specific location", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def list_levels(
         interaction: Interaction,
         location: str = SlashOption(description="Location", autocomplete=True, required=False)
@@ -421,7 +421,7 @@ Mastery commands
 '''
 
 
-@bot.slash_command(name="mastery", description="Show the mastery of all players for all or for a specific location", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="mastery", description="Show the mastery of all players for all or for a specific location", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def mastery(
         interaction: Interaction,
         location: str = SlashOption(description="Location", autocomplete=True, required=False)
@@ -450,7 +450,7 @@ async def mastery(
             await interaction.followup.send("\n" + chunk, ephemeral=True)
 
 
-@bot.slash_command(name="set_mastery", description='Set the mastery level for a location', guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="set_mastery", description='Set the mastery level for a location', guild_ids=[ALLOWED_DISCORD_SERVER])
 async def set_mastery(
         interaction: Interaction,
         location: str = SlashOption(description="Location", autocomplete=True),
@@ -485,7 +485,7 @@ General commands
 '''
 
 
-@bot.slash_command(name="contracts", description="List random locations for contracts", guild_ids=ALLOWED_DISCORD_SERVERS)
+@bot.slash_command(name="contracts", description="List random locations for contracts", guild_ids=[ALLOWED_DISCORD_SERVER])
 async def contracts(
         interaction: Interaction,
         number_of_contracts: int = SlashOption(description="How many maps to generate (default 2)", default=2, required=False),

@@ -16,12 +16,8 @@ def required_int(name: str) -> int:
     return int(required(name))
 
 
-def required_int_list(name: str) -> list[int]:
-    return [int(value.strip()) for value in required(name).split(",")]
-
-
 BOT_TOKEN: str = required("BOT_TOKEN")
-ALLOWED_DISCORD_SERVERS: list[int] = required_int_list("ALLOWED_DISCORD_SERVERS")
+ALLOWED_DISCORD_SERVER: int = required_int("ALLOWED_DISCORD_SERVER")
 SEASONS_ANNOUNCEMENT_CHANNEL_ID: int = required_int("SEASONS_ANNOUNCEMENT_CHANNEL_ID")
 RECORDS_CHANNEL_ID: int = required_int("RECORDS_CHANNEL_ID")
 GENERAL_CHANNEL_ID: int = required_int("GENERAL_CHANNEL_ID")
