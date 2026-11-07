@@ -2,3 +2,4 @@
 data.json
 .env
 backups/
+__pycache__/
